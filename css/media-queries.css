@@ -1,0 +1,103 @@
+/* 
+ *	Version 0.1 (FER)(29/03/2013)
+ *	Basado en: http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/a-simple-responsive-mobile-first-navigation/
+ */
+
+/* Table of Contents
+==================================================
+    #Smaller than standard 960
+    #Tablet (Portrait)
+    #Mobile (Portrait)
+    #Mobile (Landscape)  to Tablet (Portrait)
+    #Mobile (Portrait) to Mobile (Landscape)*/
+
+
+/* Smaller than standard 960 (devices and browsers)
+================================================== */
+@media only screen and (max-width: 1000px)  {
+ 			body kkk{ background-color:red;}
+ 		
+ 			
+}
+
+
+
+
+/* Smaller than standard 960 (devices and browsers)
+================================================== */
+
+	/* Note: Design for a width Smaller than standard 960 */
+
+	@media only screen and (max-width: 959px) {
+		body kkk{ background-color:darkorange !important;} 
+		
+	}
+
+
+
+/* #Tablet (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 768px */
+
+    @media only screen and (min-width: 768px) and (max-width: 959px) {
+		body kkk{ background-color:forestgreen !important;} 
+    
+		
+    }
+
+
+/*  #Mobile (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 320px */
+
+    @media only screen and (max-width: 767px) {
+    	body kkk{ background-color:orange !important;}
+            
+        
+		
+    }
+
+
+/* #Mobile (Landscape)  to Tablet (Portrait)
+================================================== */
+
+    /* Note: Design for a width of 480px */
+
+    @media only screen and (min-width: 480px) and (max-width: 767px) {
+    	body kkk{ 
+    		background-color:yellow !important;
+    	}
+		#mapa_container {width:100%;height:80%;margin-top:35px;position:relative;}
+		#dcha{width:100%;position:relative;top:0;}
+        #nav{
+        	display:none;
+        }
+        #mobile{display:block;}
+        #mapa{height:100%;}
+        .mapa-fullscreen div#menu-mobile{display:none;}
+        .mapa-fullscreen div#mapa{margin-top:0;}
+        #dcha h1.titulo{display:none;} 
+    }
+
+
+/* #Mobile (Portrait) to Mobile (Landscape)
+================================================== */
+	
+	@media only screen and (max-width: 479px) {
+		body kkk{
+			background-color:aqua !important;
+		}
+		#mapa_container {width:100%;height:80%;margin-top:35px;position:relative;}
+		#dcha{width:100%;position:relative;top:0;}
+        #nav{
+        	display:none;
+        }
+        #mobile{display:block;}
+        #mapa{height:100%;}
+        .mapa-fullscreen div#menu-mobile{display:none;}
+        .mapa-fullscreen div#mapa{margin-top:0;}
+        #dcha h1.titulo{display:none;}
+	
+	}

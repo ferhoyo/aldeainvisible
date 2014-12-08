@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+		<title>La Aldea Invisible</title>
+		
+		<link rel="stylesheet" href="/css/style.css" media="all">
+        <link rel="stylesheet" href="/css/menu.css" media="all">
+        <link rel="stylesheet" type="text/css" href="/css/blue.monday/jplayer.blue.monday.css">
+        <link rel="stylesheet" href="/css/media-queries.css" media="all">
+
+      <!-- ADD jQuery from google API source -->
+      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+      <script src="/js/jquery.validate.min.js"></script>
+	<script src="/js/additional-methods.min.js"></script>
+       <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
+      <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer_packed.js"></script>
+      <script type="text/javascript" src="/js/jquery.jplayer.min.fixed.js"></script>
+      <script type="text/javascript" src="/js/mapas.js"></script>
+	
+       
+    </head>
+    <body>
+    	<nav id="mobile">
+		    <div id="toggle-bar">
+		        <strong>La Aldea Invisible</strong>
+		        <a class="navicon mtoggle">MENU</a>
+		    </div>
+		    <ul id="mmenu">
+		        <li data-menu="inicio"><a href="/">Inicio</a></li>
+		        <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
+		            <ul id="mcategorias" class="hsubs"></ul>
+		        </li>
+		        <li data-menu="acerca_de"><a href="/acerca_de.html">Acerca de</a></li>
+		        <li data-menu="participa"><a href="/acerca_de.html">Participa</a></li>
+		    </ul>
+		
+		</nav>
+        <div id="mapa_container">
+		<!-- <iframe frameborder="0" scrolling="no" src="http://www.freesound.org/embed/geotags_box/iframe/?c_lat=40.16939464533797&c_lon=-4.950099885463715&z=10#box=39.85384874255015,-5.57494729757309,40.483480366785045,-4.32525247335434" width="910" height="600"></iframe> --> 
+	  <div id="mapa"></div>  <!-- MAPA -->
+	    </div>
+        <div id="dcha"> <!-- LATERAL -->
+        	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+        	<ul id="nav">
+                <li data-menu="inicio"><a data-menu="inicio" href="/">Inicio</a></li>
+                <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
+                    <ul class="subs" id="categorias"></ul>
+                </li>
+                <li data-menu="acerca_de"><a data-menu="acerca_de" href="/acerca_de.html">Acerca de</a></li>
+                <li data-menu="participa"><a data-menu="participa" href="/participa.html">Participa</a></li>
+            </ul>
+        	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
+        	<h1 class="titulo">La Aldea Invisible</h1>
+        	<form id="buscador" >
+						<label class="assistive-text" for="query">Buscar</label>
+						<input id="query" type="search" placeholder="Buscar" name="query" />
+						<input id="submit" type="submit" value="Buscar" name="submit" />
+					</form>	 
+        	<div id="dcha_content">
+	        	<h4 class="subtitulo">Sonidos de los valles Alberche-Tietar</h4>
+	            <p class="descripcion">
+	
+					Este proyecto surge entre dos rios, el Tietar y el Alberche, el sur y el norte de nuestro mapa.
+					<br><br>
+					Propone una exploración usando el sentido del oído, como si se tratara de encontrar una mítica aldea, invisible, a la que no se puede llegar con la mirada.
+					<br><br>
+					Rastreando y captando, interpretando el paisaje sonoro, emerge el territorio con los audios que se van incorporando al mapa.
+					<br><br>
+					Este proyecto es también una base libre de sonidos que muestra de una manera directa y sencilla, fragmentos de la vida de los valles.
+					<br><br>
+					Los audios que aparecen en La Aldea Invisible se publican bajo licencias libres -indicada en cada audio- y por lo tanto pueden ser copiados, remezclados e incorporados a otros trabajos, artísticos, científicos, documentales, respetando las condiciones de dichas licencias.
+					
+	            </p>         
+		           		
+		     
+		         
+		            <h4>Tags</h4>
+		    		<div id="tagCloud"></div>
+	      	</div>
+        </div>
+        <!-- /LATERAL -->
+    </body>
+</html>

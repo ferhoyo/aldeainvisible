@@ -1,0 +1,100 @@
+#nav,#nav ul {
+    list-style: none outside none;
+    margin: 0;
+    padding: 0;
+}
+#nav {
+/***   background: url('../iconos/menu_bg.png') no-repeat scroll 0 0 transparent; ***/
+	background-color: #B24926;
+    clear: both;
+    font-size: 12px;
+    height: 35px;
+/***    padding: 0 0 0 9px  ***/;
+    position: relative;
+    display: inline-block;
+}
+#nav ul {
+    background-color: #028B8B;
+    border:1px solid #028B8B;
+    border-radius: 0 0 5px 5px;
+    border-width: 0 1px 1px;
+ /***  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5); ***/
+    left: -9999px;
+    overflow: hidden;
+    position: absolute;
+    top: -9999px;
+    z-index: 2;
+
+    -moz-transform: scaleY(0);
+    -ms-transform: scaleY(0);
+    -o-transform: scaleY(0);
+    -webkit-transform: scaleY(0);
+    transform: scaleY(0);
+
+    -moz-transform-origin: 0 0;
+    -ms-transform-origin: 0 0;
+    -o-transform-origin: 0 0;
+    -webkit-transform-origin: 0 0;
+    transform-origin: 0 0;
+
+    -moz-transition: -moz-transform 0.1s linear;
+    -ms-transition: -ms-transform 0.1s linear;
+    -o-transition: -o-transform 0.1s linear;
+    -webkit-transition: -webkit-transform 0.1s linear;
+    transition: transform 0.1s linear;
+}
+#nav li {
+ /***   background: url('../iconos/menu_line.png') no-repeat scroll right 5px transparent; ***/
+    float: left;
+    position: relative;
+}
+#nav > li:nth-of-type(2) {
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+}
+#nav > li:nth-of-type(3) {
+	border-right: 1px solid #ccc;
+}
+#nav li a {
+    color: #F8F8FF;
+    display: block;
+    float: left;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    height: 23px;
+    line-height: 12px;
+    padding: 12px 12px 0;
+    position: relative;
+    text-decoration: none;
+}
+#nav li:hover > a {
+    color: #F8F8FF;
+}
+#nav li:hover, #nav a:focus, #nav a:hover, #nav a:active {
+    background: none repeat scroll 0 0 #8FBC8F;
+    outline: 0 none;
+}
+#nav li.selected {background-color:#8FBC8F;}
+#nav li:hover ul.subs {
+    left: 0;
+    top: 35px;
+    width: 88px;
+
+    -moz-transform: scaleY(1);
+    -ms-transform: scaleY(1);
+    -o-transform: scaleY(1);
+    -webkit-transform: scaleY(1);
+    transform: scaleY(1);
+}
+#nav ul li {
+    background: none;
+    width: 100%;
+}
+#nav ul li a {
+/*	padding: 6px 20px; */
+    float: none;
+}
+#nav ul li:hover > a {
+    background-color: #8FBC8F;
+    color: #F8F8FF;
+}
