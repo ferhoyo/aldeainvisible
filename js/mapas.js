@@ -650,6 +650,7 @@ function doQuery(busqueda){
 		
 		for (var i = 0; i < markers.length; i++) {
 			if (data.id == markers[i].soundId) {
+				markers[i].setVisible(true);
 		    	markerCluster.addMarker(markers[i]);
 		        sideBar += '<li data-id="'+ i +'" onclick="myclick(' + i + ')"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';	          
 		    }

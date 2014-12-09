@@ -85,6 +85,11 @@ box-shadow:0 2px 4px rgba(0, 0, 0, 0.4);
 #dcha form#buscador {
 	display:none;
 }
+input#query{
+	background: url("/iconos/lupa.gif") no-repeat scroll 0 2px #f9f9f9;
+    padding-left: 25px;
+    padding-right: 2px;
+}
 #dcha_content {display: none;}
 #dcha_content h5 span {
 	font-size: smaller;
