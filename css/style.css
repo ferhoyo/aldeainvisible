@@ -55,22 +55,24 @@ box-shadow:0 2px 4px rgba(0, 0, 0, 0.4);
     /*** Fix for scroll bars ***/
     line-height:1.35;
     overflow:hidden !important;
-
-
-    padding:0 15px;
+    padding:5px 5px 0;
     margin:0;
 }
 
 .gm-style-iw  {
     overflow: hidden !important; 
     width:300px !important;
-   
 }
+.gm-style-iw > div { width:auto!important}
+
 #etiquetas-marker ul {list-style-type:none;padding:0}
 #etiquetas-marker li a::first-letter {
     text-transform: capitalize !important;
 }
 
+.jp-type-single {
+    max-height: 40px;
+}
 /****** Lateral  *******/
 #dcha h1.titulo {
 
@@ -78,17 +80,25 @@ box-shadow:0 2px 4px rgba(0, 0, 0, 0.4);
 #dcha h4.subtitulo{
 
 }
-#dcha p.descripcion, #dcha form#buscador{
-	border-bottom: 2px outset #999;
-    padding-bottom: 20px;
+#dcha p.descripcion{
+	padding-bottom: 20px;
+	border-bottom:2px outset #999;
 }
 #dcha form#buscador {
-	display:none;
+/*	display:none; */
 }
 input#query{
-	background: url("/iconos/lupa.gif") no-repeat scroll 0 2px #f9f9f9;
+	background: url("/iconos/lupa.gif") no-repeat scroll 0 2px #f9f9f8;
     padding-left: 25px;
     padding-right: 2px;
+    width:250px;
+    border:1px solid #ccc;
+    
+}
+#submit{
+	background-color:#f9f9f8;
+	border:1px solid #ccc;
+	display:none;
 }
 #dcha_content {display: none;}
 #dcha_content h5 span {

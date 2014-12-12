@@ -16,11 +16,10 @@ var sideBarParticipa;
 var markerCluster;
 var clusterOps = {gridSize: 30,maxZoom: 13,ignoreHidden: true,averageCenter:true};
 jQuery(document).ready(function($) {
- // sacamos donde estamos y llenamos varialbes archivo y param
-    url = parseUri(window.location.href);
-    archivo = decodeURIComponent(url.fileName);
+    // sacamos donde estamos y llenamos varialbes archivo y param
+    archivo = decodeURIComponent( location.pathname.replace(/^.*[\\\/]/, '') );
     archivo = archivo.replace('.html','');
-    path = decodeURIComponent(url.directoryPath);
+    path = decodeURIComponent( decodeURIComponent(location.pathname) );
     pathArr = path.split('/');
     pathArr.pop();
     param = pathArr[pathArr.length -1];
@@ -192,7 +191,7 @@ jQuery(document).ready(function($) {
             muestraTag(archivo);
             $('#dcha_content').show();
         } else {
-        	if ( archivo == '' && param == '') { // incio
+        	if ( archivo == '' || archivo == 'index' && param == '') { // incio
 	        	$('#nav li[data-menu="inicio"]').addClass('selected');
 	        	$('#mmenu li[data-menu="inicio"] a').addClass('selected');
 	        	$('#dcha_content').show();
@@ -290,34 +289,7 @@ jQuery(document).ready(function($) {
 		
 		muestraTagoCat(param,archivo);
 	});
-	
-	/*
-	 * Validacion
-	 */
-	$("#buscador").validate({
-		rules: {
-			query: {
-				minlength: 2
-			}
-		},
-		messages: {
-			query: {
-				minlength: "Introduzca una búsqueda más larga"
-			}
-		},
-		submitHandler: function(form) {
-			var busqueda = $('#query').val();
-			busqueda = busqueda.trim();
-			if (busqueda=='') return;
-		//	alert('submited: '+busqueda)
-			doQuery(busqueda);
-	   		// form.submit();
-		}
-	});
-	
-	
-	
-	
+
 }); // FIN doc ready
 
 function FullScreenControl(controlDiv, map) {
@@ -410,13 +382,13 @@ function cargaJP(infoTags,infoTitulo,infoAutor,infoFecha,infoDescripcion,infoId,
                     To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>. \
                 </div> \
             </div> \
-            <span class="download-link"><a onclick="pauseJPlayer()" tabindex="1" href="' + infoUrl + '" target="_blank">Download at freesound.org</a></span> \
         </div> \
         <hr class="clear" /> \
         <div class="marker-info"> \
             <div id="etiquetas-marker"> \
                 <ul> ' + tagsHTML + '  </ul> \
             </div> \
+            <span class="download-link"><a onclick="pauseJPlayer()" tabindex="1" href="' + infoUrl + '" target="_blank">Descargar en freesound.org</a></span> \
         </div> \
     </div> \
 </div> \
@@ -510,6 +482,7 @@ function muestraTagoCat(param,archivo){
         
      //   $('#mmenu li[data-menu="inicio"]').addClass('selected');
         muestraCat(archivo);
+        
     } else if (param=='tag'){
         if ( allTags.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
         $('li[data-menu], li[data-menu] a').removeClass('selected');
@@ -554,8 +527,10 @@ function muestraTagoCat(param,archivo){
 				$( "#dcha_content" ).html( sideBarParticipa );
 			}
 			mapaAInicio();
+			
 		}
     }
+    $( "#dcha_content" ).show();
 }
 
 function muestraTag(tag) {
@@ -600,7 +575,6 @@ function muestraCat(category) {
     }
     sideBar += "</ul>";
     $('#dcha_content').html(sideBar.replace('__COUNT__', count));
-
 	if (markerCluster) {
     	markerCluster.repaint();
 	}
@@ -625,7 +599,10 @@ function mapaAInicio(){
 /*
  * Buscador
  */
-function doQuery(busqueda){
+function doQuery(){
+	var busqueda = $('#query').val();
+	busqueda = busqueda.trim();
+	if (busqueda=='') return;
 	$.getJSON('http://www.freesound.org/apiv2/search/text/?filter=geotag:%22Intersects%28-5.138%2040.125%20-4.223%2040.538%29%22&fields=id&token=e330f1a7dedaba306af677f43839d216028755bf&format=json&page_size=150&query='+busqueda, function (json1) {
 
 		//TODO: comprobar que hay al menos 1 resultado
@@ -673,43 +650,6 @@ function doQuery(busqueda){
 		}
 
 	}); // FIN getJSON
+	return false;
 }
 
-
-
-
-
-
-
-
-
-/* parseUri JS v0.1.1, by Steven Levithan <http://stevenlevithan.com>
-Splits any well-formed URI into the following parts (all are optional):
-----------------------
-- source (since the exec method returns the entire match as key 0, we might as well use it)
-- protocol (i.e., scheme)
-- authority (includes both the domain and port)
-  - domain (i.e., host; can be an IP address)
-  - port
-- path (includes both the directory path and filename)
-  - directoryPath (supports directories with periods, and without a trailing backslash)
-  - fileName
-- query (does not include the leading question mark)
-- anchor (i.e., fragment) */
-function parseUri(sourceUri){
-	var uriPartNames = ["source","protocol","authority","domain","port","path","directoryPath","fileName","query","anchor"],
-		uriParts = new RegExp("^(?:([^:/?#.]+):)?(?://)?(([^:/?#]*)(?::(\\d*))?)((/(?:[^?#](?![^?#/]*\\.[^?#/.]+(?:[\\?#]|$)))*/?)?([^?#/]*))?(?:\\?([^#]*))?(?:#(.*))?").exec(sourceUri),
-		uri = {};
-	
-	for(var i = 0; i < 10; i++){
-		uri[uriPartNames[i]] = (uriParts[i] ? uriParts[i] : "");
-	}
-	
-	/* Always end directoryPath with a trailing backslash if a path was present in the source URI
-	Note that a trailing backslash is NOT automatically inserted within or appended to the "path" key */
-	if(uri.directoryPath.length > 0){
-		uri.directoryPath = uri.directoryPath.replace(/\/?$/, "/");
-	}
-	
-	return uri;
-}

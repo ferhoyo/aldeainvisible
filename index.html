@@ -13,8 +13,6 @@
 
       <!-- ADD jQuery from google API source -->
       <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-      <script src="/js/jquery.validate.min.js"></script>
-	<script src="/js/additional-methods.min.js"></script>
        <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
       <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer_packed.js"></script>
       <script type="text/javascript" src="/js/jquery.jplayer.min.fixed.js"></script>
@@ -54,13 +52,14 @@
             </ul>
         	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
         	<h1 class="titulo">La Aldea Invisible</h1>
-        	<form id="buscador" >
+        	<h3 class="subtitulo">Sonidos de los valles Alberche-Tietar</h3>
+        	<form id="buscador" onsubmit='return doQuery()'>
 						<label class="assistive-text" for="query">Buscar</label>
 						<input id="query" type="search" placeholder="Buscar" name="query" />
 						<input id="submit" type="submit" value="Buscar" name="submit" />
 					</form>	 
         	<div id="dcha_content">
-	        	<h4 class="subtitulo">Sonidos de los valles Alberche-Tietar</h4>
+	        	
 	            <p class="descripcion">
 	
 					Este proyecto surge entre dos rios, el Tietar y el Alberche, el sur y el norte de nuestro mapa.
