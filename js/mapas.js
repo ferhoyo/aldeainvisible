@@ -7,7 +7,7 @@ var allCategories = ["artesania","naturaleza","oficios","instrumentos","urbano",
 var allTags = [];
 var archivo;
 var param;
-var tagsDiv = '';
+var tagsLI = '';
 var tagsForCloud = [];
 var sideBar;
 var sideBarInicio;
@@ -87,7 +87,7 @@ jQuery(document).ready(function($) {
     }));    
 
     $(document).keyup(function(e) {
-		if (e.keyCode == 27) { infowindow.close(); $.jPlayer.stop();}   // esc
+		if (e.keyCode == 27) { $.jPlayer.pause();infowindow.close();}   // esc
 	});  
         
 
@@ -123,6 +123,13 @@ jQuery(document).ready(function($) {
            });
 			
 			marker.soundId = data.id;
+			
+			// make all tags tolowercase
+			data.tags = data.tags.map(function (x) {
+				return x.toLowerCase();
+			});
+			
+			
             marker.tags = data.tags;
             marker.autor = data.username;
             markers.push(marker);
@@ -167,8 +174,8 @@ jQuery(document).ready(function($) {
      	
      	 // sacamos las categorias para el menu
         for (i = 0; i < allCategories.length; i++) { 
-      	  $('#categorias').append('<li><a title="Ver categorí­a ' + allCategories[i] + '" data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
-     	   $('#mcategorias').append('<li><a title="Ver categorí­a ' + allCategories[i] + '" data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
+      	  $('#categorias').append('<li><a data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
+     	   $('#mcategorias').append('<li><a data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
         }
 		markerCluster = new MarkerClusterer(map, markers,clusterOps);
      	sideBarInicio = $('#dcha_content').html();
@@ -182,7 +189,7 @@ jQuery(document).ready(function($) {
             $('#dcha_content').show();
         } else 	if (param=='tag'){
             if ( allTags.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
-            $('#tagCloud span').each(function(){
+            $('#tagCloud li').each(function(){
             	if ( $(this).attr('data-tag') == archivo ){
             		$(this).addClass('selected');
             		return false;
@@ -208,6 +215,7 @@ jQuery(document).ready(function($) {
 					$( "#dcha_content" ).html( sideBarAbout );
 					$('#dcha_content').show();
 				}
+				document.title = 'La Aldea Invisible - Acerca de';
 			} else if ( archivo == 'participa' ){
 				$('#nav li[data-menu="participa"]').addClass('selected');
 	        	$('#mmenu li[data-menu="participa"] a').addClass('selected');
@@ -221,6 +229,7 @@ jQuery(document).ready(function($) {
 					$( "#dcha_content" ).html( sideBarParticipa );
 					$('#dcha_content').show();
 				}
+				document.title = 'La Aldea Invisible - Participa';
 			}
         }		
 		
@@ -234,17 +243,17 @@ jQuery(document).ready(function($) {
         $("#mmenu").fadeToggle(500);
     });
     //animacion markers
-	$('#dcha_content').on('mouseenter', 'ul li', function(){
+	$('#dcha_content').on('mouseenter', 'ul#soundList li', function(){
 		markerId = $(this).attr('data-id');
 		markers[markerId].setAnimation(google.maps.Animation.BOUNCE);
 	});
-	$('#dcha_content').on('mouseleave', 'ul li', function(){
+	$('#dcha_content').on('mouseleave', 'ul#soundList li', function(){
 		markerId = $(this).attr('data-id');
 		markers[markerId].setAnimation(null);
 	});
 	
 	
-	$('body').on('click','a[href*=".html"],a[data-menu="inicio"]',function (e) {
+	$('body').on('click','a[href*=".html"],a[href="/"]',function (e) {
 		e.preventDefault();
 		
 		if ( $('#mmenu').css('display') == 'block' ) $("#mmenu").fadeToggle(500);
@@ -422,8 +431,10 @@ function pauseJPlayer(){ $.jPlayer.pause();}
 function stopJPlayer(){ $('.jp-jplayer').jPlayer('stop');}
 function llenaNubeTags(arr) {
     var  tags = [], frecuencia = [],prev;
-    
-	arr.sort();
+    // sort case insensitive
+	arr.sort(function (a, b) {
+    	return a.toLowerCase().localeCompare(b.toLowerCase());
+	});
     for ( var i = 0; i < arr.length; i++ ) {
         if ( arr[i] !== prev ) {
             tags.push(arr[i]);
@@ -434,14 +445,9 @@ function llenaNubeTags(arr) {
         prev = arr[i];
     }
     for ( var i = 0; i < tags.length; i++ ) {
-    	if ( i < tags.length -1 ) {
-			tagsDiv += '<span class="freq_'+frecuencia[i]+'" data-tag="'+tags[i]+'"><a href="http://www.aldeainvisible.net/tag/'+tags[i]+'.html">'+tags[i]+' <span>(' +frecuencia[i] + ')</span>,</a></span> ';
-		} else {
-			tagsDiv += '<span class="freq_'+frecuencia[i]+'" data-tag="'+tags[i]+'"><a href="http://www.aldeainvisible.net/tag/'+tags[i]+'.html">'+tags[i]+' <span>(' +frecuencia[i] + ')</span>.</a></span>';
-		}
-		
+		tagsLI += '<li class="freq_'+frecuencia[i]+'" data-tag="'+tags[i]+'"><a href="http://www.aldeainvisible.net/tag/'+tags[i]+'.html">'+tags[i]+' <span>(' +frecuencia[i] + ')</span></a></li> ';
 	}
-   $('#tagCloud').append(tagsDiv);
+   $('#tagCloud').append(tagsLI);
 }
 
 // segun la url mostramos categoria seleccionada o tag seleccionado
@@ -487,7 +493,7 @@ function muestraTagoCat(param,archivo){
         if ( allTags.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
         $('li[data-menu], li[data-menu] a').removeClass('selected');
         $('#categorias li a[data-categoria]').removeClass('sel');
-        $('#tagCloud span').each(function(){
+        $('#tagCloud li').each(function(){
         	if ( $(this).attr('data-tag') == archivo ){
         		$(this).addClass('selected');
         		return false;
@@ -502,7 +508,8 @@ function muestraTagoCat(param,archivo){
 	    	$('#nav li[data-menu="inicio"]').addClass('selected');
 	    	$('#mmenu li[data-menu="inicio"] a').addClass('selected');
 	    	mapaAInicio();
-	    	$('#dcha_content').html(sideBarInicio);		   
+	    	$('#dcha_content').html(sideBarInicio);
+	    	document.title = 'La Aldea Invisible';	   
     	} else if(archivo=='acerca_de'){
     		$('#nav li[data-menu="acerca_de"]').addClass('selected');
 	    	$('#mmenu li[data-menu="acerca_de"] a').addClass('selected');
@@ -514,6 +521,7 @@ function muestraTagoCat(param,archivo){
 			} else {
 				$( "#dcha_content" ).html( sideBarAbout );
 			}
+			document.title = 'La Aldea Invisible - Acerca de';
 			mapaAInicio();
     	} else if(archivo=='participa'){
     		$('#nav li[data-menu="participa"]').addClass('selected');
@@ -526,6 +534,7 @@ function muestraTagoCat(param,archivo){
 			} else {
 				$( "#dcha_content" ).html( sideBarParticipa );
 			}
+			document.title = 'La Aldea Invisible - Participa';
 			mapaAInicio();
 			
 		}
@@ -536,8 +545,8 @@ function muestraTagoCat(param,archivo){
 function muestraTag(tag) {
     var i;
     var count = 0;
-    sideBar = "<h5>Tag " + tag.toUpperCase() +" <span>(__COUNT__)</span><\/h5>";
-    sideBar += "<ul>";
+    sideBar = "<h3>Tag " + tag +" <span>(__COUNT__)</span><\/h3>";
+    sideBar += "<ul id='soundList'>";
     for (i = 0; i < markers.length; i++) {
         if ( markers[i].tags.indexOf(tag) > -1 ) {
             markers[i].setVisible(true);
@@ -552,6 +561,7 @@ function muestraTag(tag) {
     if (markerCluster) {
     	markerCluster.repaint();
 	}
+	document.title = 'La Aldea Invisible - Tag '+ tag;
 }
 
 function myclick(i) {
@@ -561,8 +571,8 @@ function myclick(i) {
 function muestraCat(category) {
     var i;
     var count = 0;
-    sideBar = "<h5>Categorí­a " + category.toUpperCase() +" <span>(__COUNT__)</span><\/h5>";
-    sideBar += "<ul>";
+    sideBar = "<h3>Categorí­a " + category +" <span>(__COUNT__)</span><\/h3>";
+    sideBar += "<ul id='soundList'>";
     for (i = 0; i < markers.length; i++) {
         if ( markers[i].tags.indexOf(category) > -1 ) {
             markers[i].setVisible(true);
@@ -578,6 +588,7 @@ function muestraCat(category) {
 	if (markerCluster) {
     	markerCluster.repaint();
 	}
+	document.title = 'La Aldea Invisible - Categoría '+ category;
 } 
 
 function mapaAInicio(){
@@ -611,8 +622,8 @@ function doQuery(){
 
  		map.panTo(lat_long);
 		map.setZoom(11);
-		sideBar = "<h5>Resultados búsqueda " + busqueda +" <span>("+json1.results.length+")</span><\/h5>";
-		sideBar += "<ul>";
+		sideBar = '<h3>Resultados búsqueda ' + busqueda + ' <span> ('+json1.results.length+')</span><\/h3>';
+		sideBar += '<ul id="soundList">';
 		$.each(json1.results, function (key, data) {
 		/*
 		    for (var i = 0; i < markers.length; i++) {

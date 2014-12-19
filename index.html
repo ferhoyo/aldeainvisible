@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
@@ -26,39 +26,45 @@
 		        <strong>La Aldea Invisible</strong>
 		        <a class="navicon mtoggle">MENU</a>
 		    </div>
-		    <ul id="mmenu">
-		        <li data-menu="inicio"><a href="/">Inicio</a></li>
-		        <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
-		            <ul id="mcategorias" class="hsubs"></ul>
-		        </li>
-		        <li data-menu="acerca_de"><a href="/acerca_de.html">Acerca de</a></li>
-		        <li data-menu="participa"><a href="/acerca_de.html">Participa</a></li>
-		    </ul>
+		    <div  role="navigation">
+			    <ul id="mmenu">
+			        <li data-menu="inicio"><a href="/">Inicio</a></li>
+			        <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
+			            <ul id="mcategorias" class="hsubs"></ul>
+			        </li>
+			        <li data-menu="acerca_de"><a href="/acerca_de.html">Acerca de</a></li>
+			        <li data-menu="participa"><a href="/acerca_de.html">Participa</a></li>
+			    </ul>
+		    </div>
 		
 		</nav>
-        <div id="mapa_container">
-		<!-- <iframe frameborder="0" scrolling="no" src="http://www.freesound.org/embed/geotags_box/iframe/?c_lat=40.16939464533797&c_lon=-4.950099885463715&z=10#box=39.85384874255015,-5.57494729757309,40.483480366785045,-4.32525247335434" width="910" height="600"></iframe> --> 
-	  <div id="mapa"></div>  <!-- MAPA -->
+       <div id="mapa_container">
+			  <div id="mapa"></div>  <!-- MAPA -->
 	    </div>
         <div id="dcha"> <!-- LATERAL -->
         	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-        	<ul id="nav">
-                <li data-menu="inicio"><a data-menu="inicio" href="/">Inicio</a></li>
-                <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
-                    <ul class="subs" id="categorias"></ul>
-                </li>
-                <li data-menu="acerca_de"><a data-menu="acerca_de" href="/acerca_de.html">Acerca de</a></li>
-                <li data-menu="participa"><a data-menu="participa" href="/participa.html">Participa</a></li>
-            </ul>
+        	<nav role="navigation">
+	        	<ul id="nav">
+	                <li data-menu="inicio"><a data-menu="inicio" href="/">Inicio</a></li>
+	                <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
+	                    <ul class="subs" id="categorias"></ul>
+	                </li>
+	                <li data-menu="acerca_de"><a data-menu="acerca_de" href="/acerca_de.html">Acerca de</a></li>
+	                <li data-menu="participa"><a data-menu="participa" href="/participa.html">Participa</a></li>
+	            </ul>
+            </nav>
         	<!-- XXXXXXXXXXXXXXXXXXXXXXXXXXXXX -->
-        	<h1 class="titulo">La Aldea Invisible</h1>
-        	<h3 class="subtitulo">Sonidos de los valles Alberche-Tietar</h3>
-        	<form id="buscador" onsubmit='return doQuery()'>
-						<label class="assistive-text" for="query">Buscar</label>
-						<input id="query" type="search" placeholder="Buscar" name="query" />
-						<input id="submit" type="submit" value="Buscar" name="submit" />
-					</form>	 
-        	<div id="dcha_content">
+        	<div role="banner">
+	        	<h1 class="titulo">La Aldea Invisible</h1>
+	        	<h2 class="subtitulo">Sonidos de los valles Alberche-Tietar</h2>
+	        
+	        	<form id="buscador" onsubmit='return doQuery()' role="search">
+					<label class="assistive-text" for="query">Buscar</label>
+					<input id="query" type="search" placeholder="Buscar" name="query" />
+					<input id="submit" type="submit" value="Buscar" name="submit" />
+				</form>	 
+			</div>
+        	<div id="dcha_content" aria-live="polite" role="main">
 	        	
 	            <p class="descripcion">
 	
@@ -76,10 +82,26 @@
 		           		
 		     
 		         
-		            <h4>Tags</h4>
-		    		<div id="tagCloud"></div>
+		            <h3 id="tags_label">Tags</h3>
+		    		<ul id="tagCloud" aria-labelledby="tags_label"></ul>
 	      	</div>
+	      	 <div id="footer" role="contentinfo">
+	      	 	<hr>
+	      	 	<p>
+	      	 		Un proyecto de:
+	      	 		<br>
+	      	 		<a href="http://libreopenlabaudiovisual.wordpress.com/"><img src="/iconos/icono_lola-99.png" alt="Lola logo" />  </a>
+	      	 		<a href="http://www.guardarcomofilms.net"><img src="/iconos/icono_gcf-99.png" alt="Guardarcomofilms logo" />  </a>
+	      	 	</p>
+	      	 	<p>
+	      	 		Con la API del proyecto
+	      	 		<br>
+	      	 		<a href="http://freesound.org"><img src="/iconos/freesound-99.png" alt="Freesound logo" />  </a>
+	      	 	</p>
+	      	 </div>
         </div>
         <!-- /LATERAL -->
+         
+       
     </body>
 </html>

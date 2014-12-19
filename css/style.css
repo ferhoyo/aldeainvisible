@@ -44,8 +44,9 @@ box-shadow:0 2px 4px rgba(0, 0, 0, 0.4);
     top: 0;
     width: 25%;
     margin:0;
-    padding:5px 10px;
+    padding:5px 10px 185px;
     font-family:"Open Sans",Arial,Helvetica,sans-serif;
+    min-height: 100%;
  /*   -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
 /*	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
 	box-sizing: border-box;         /* Opera/IE 8+ */
@@ -91,7 +92,7 @@ input#query{
 	background: url("/iconos/lupa.gif") no-repeat scroll 0 2px #f9f9f8;
     padding-left: 25px;
     padding-right: 2px;
-    width:250px;
+    max-width:86%;
     border:1px solid #ccc;
     
 }
@@ -107,7 +108,7 @@ input#query{
     font-weight: normal;
 }
 #dcha_content > ul {padding:0}
-#dcha_content li {
+#dcha_content ul li {
 	list-style-type: none;
 	cursor: pointer;
 }
@@ -115,7 +116,7 @@ input#query{
 	color: #111;
     text-decoration: none;
 }
-#dcha_content li:hover{background-color:#ccc;}
+#dcha_content ul li:hover{background-color:#ccc;}
 #categorias { list-style-type:none;padding:0}
 #categorias li  {
 
@@ -138,18 +139,15 @@ input#query{
 #tagCloud {
 	margin-bottom: 20px;
 }
-#tagCloud > span {
+#tagCloud li {
     display: inline-block;
-    padding: 2px 0px 2px 1px;
+    padding: 2px 1px 0px;
     border-radius: 3px;
     line-height: 20px;
 }
 #tagCloud span a {
 	text-decoration:none;
 	color: #000;
-}
-#tagCloud span::first-letter{
-	text-transform: capitalize;
 }
 
 #tagCloud span:hover, #tagCloud span a:hover, #tagCloud span a:focus, #tagCloud span a:active {
@@ -159,35 +157,35 @@ input#query{
 
 
 
-#tagCloud span.selected {
+#tagCloud li.selected {
 	background-color: #8fbc8f;
 	border-color: #8fbc8f;
 }
-span.freq_1{
-	font-size: 10px;
-}
-span.freq_2{
+li.freq_1{
 	font-size: 12px;
 }
-span.freq_3{
+li.freq_2{
+	font-size: 13px;
+}
+li.freq_3{
 	font-size: 14px;
 }
-span.freq_4{
+li.freq_4{
 	font-size: 16px;
 }
-span.freq_5{
+li.freq_5{
 	font-size: 18px;
 }
-span.freq_6{
+li.freq_6{
 	font-size: 20px;
 }
-span.freq_7{
+li.freq_7{
 	font-size: 22px;
 }
-span.freq_8{
+li.freq_8{
 	font-size: 24px;
 }
-span.freq_9{
+li.freq_9{
 	font-size: 26px;
 }
 
@@ -195,6 +193,24 @@ span.freq_9{
 #tagCloud a span{
 	font-size: x-small;
 }
+
+/** footer **/
+#footer {
+	position:absolute;
+	bottom: 15px;
+	min-width: 96%;
+	
+}
+
+#footer p {
+    floatkk: left;
+    margin-right: 15px;
+}
+
+#footer a {
+    margin-right: 15px;
+}
+#footer img {max-width:90%}
 
 /*
  * About us
@@ -206,8 +222,17 @@ span.freq_9{
     margin-left: 30px;
 }
 
+/*
+ * participa
+ */
 
-
+ol.howto  { counter-reset: item; padding: 0 0 0 10px }
+ol.howto li { display: block;text-indent:-10px; line-height: 16px;}
+ol.howto li:before { content: counters(item, ".") " "; counter-increment: item }
+ol.howto ol {padding-left: 20px;}
+.howto a{color:#111;text-decoration:underline!important;}
+.howto a:hover{background-color: #ccc;}
+.howto li span{font-weight:600}
 #pie{
 	position: absolute;
 	bottom: 0;
@@ -237,7 +262,7 @@ nav ul {
     text-transform: capitalize;
     width: 145px;
 }
-nav > ul {
+ul#mmenu {
 	position: absolute;
 	right:0;
 	z-index:100;
