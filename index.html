@@ -2,7 +2,7 @@
 <html lang="es">
     <head>
         <meta charset="utf-8" />
-        <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="apple-mobile-web-app-capable" content="yes" />
 		<title>La Aldea Invisible</title>
 		
@@ -12,11 +12,12 @@
         <link rel="stylesheet" href="/css/media-queries.css" media="all">
 
       <!-- ADD jQuery from google API source -->
-      <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-       <script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
-      <script type="text/javascript" src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer_packed.js"></script>
-      <script type="text/javascript" src="/js/jquery.jplayer.min.fixed.js"></script>
-      <script type="text/javascript" src="/js/mapas.js"></script>
+      <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+      <script>window.jQuery || document.write(unescape('%3Cscript src="/js/jquery-1.7.2.min.js"%3E%3C/script%3E'))</script>
+       <script src="http://maps.googleapis.com/maps/api/js?v=3&sensor=false"></script>
+      <script src="http://google-maps-utility-library-v3.googlecode.com/svn/tags/markerclustererplus/2.1.2/src/markerclusterer_packed.js"></script>
+      <script src="/js/jquery.jplayer.min.fixed.js"></script>
+      <script src="/js/mapas.js"></script>
 	
        
     </head>
@@ -29,11 +30,11 @@
 		    <div  role="navigation">
 			    <ul id="mmenu">
 			        <li data-menu="inicio"><a href="/">Inicio</a></li>
-			        <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
+			        <li data-menu="categorias"><a class="hsubs" href="javascript:void(0)">Categorías</a>
 			            <ul id="mcategorias" class="hsubs"></ul>
 			        </li>
 			        <li data-menu="acerca_de"><a href="/acerca_de.html">Acerca de</a></li>
-			        <li data-menu="participa"><a href="/acerca_de.html">Participa</a></li>
+			        <li data-menu="participa"><a href="/participa.html">Participa</a></li>
 			    </ul>
 		    </div>
 		
@@ -46,7 +47,7 @@
         	<nav role="navigation">
 	        	<ul id="nav">
 	                <li data-menu="inicio"><a data-menu="inicio" href="/">Inicio</a></li>
-	                <li data-menu="categorias"><a class="hsubs" href="#">Categorías</a>
+	                <li data-menu="categorias"><a class="hsubs" href="javascript:void(0)">Categorías</a>
 	                    <ul class="subs" id="categorias"></ul>
 	                </li>
 	                <li data-menu="acerca_de"><a data-menu="acerca_de" href="/acerca_de.html">Acerca de</a></li>
@@ -72,12 +73,12 @@
 					<br><br>
 					Propone una exploración usando el sentido del oído, como si se tratara de encontrar una mítica aldea, invisible, a la que no se puede llegar con la mirada.
 					<br><br>
-					Rastreando y captando, interpretando el paisaje sonoro, emerge el territorio con los audios que se van incorporando al mapa.
+					Interpretando el paisaje sonoro emerge el territorio con los audios que se van incorporando al mapa, mostrando de una manera directa y sencilla fragmentos de la vida de los valles.
 					<br><br>
-					Este proyecto es también una base libre de sonidos que muestra de una manera directa y sencilla, fragmentos de la vida de los valles.
-					<br><br>
-					Los audios que aparecen en La Aldea Invisible se publican bajo licencias libres -indicada en cada audio- y por lo tanto pueden ser copiados, remezclados e incorporados a otros trabajos, artísticos, científicos, documentales, respetando las condiciones de dichas licencias.
+					Este proyecto es también una base de datos de audio libre y colaborativa. Los audios que aparecen en La Aldea Invisible se publican bajo licencias libres -indicada en cada audio- y por lo tanto pueden ser copiados, remezclados e incorporados a otros trabajos, artísticos, científicos, documentales, etc, respetando las condiciones de dichas licencias.
 					
+					<br><br>
+					Si quieres añadir tus grabaciones al mapa haz click en <a href="http://www.aldeainvisible.net/participa.html">participa</a>.
 	            </p>         
 		           		
 		     
@@ -88,14 +89,8 @@
 	      	 <div id="footer" role="contentinfo">
 	      	 	<hr>
 	      	 	<p>
-	      	 		Un proyecto de:
-	      	 		<br>
-	      	 		<a href="http://libreopenlabaudiovisual.wordpress.com/"><img src="/iconos/icono_lola-99.png" alt="Lola logo" />  </a>
-	      	 		<a href="http://www.guardarcomofilms.net"><img src="/iconos/icono_gcf-99.png" alt="Guardarcomofilms logo" />  </a>
-	      	 	</p>
-	      	 	<p>
-	      	 		Con la API del proyecto
-	      	 		<br>
+	      	 		<a href="http://libreopenlabaudiovisual.wordpress.com/"><img src="/iconos/icono_lola-70.png" alt="Lola logo" />  </a>
+	      	 		<a href="http://www.guardarcomofilms.net"><img src="/iconos/icono_gcf-70.png" alt="Guardarcomofilms logo" />  </a>
 	      	 		<a href="http://freesound.org"><img src="/iconos/freesound-99.png" alt="Freesound logo" />  </a>
 	      	 	</p>
 	      	 </div>

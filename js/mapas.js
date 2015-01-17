@@ -1,45 +1,63 @@
+/** @licstart  The following is the entire license notice for the 
+ *  JavaScript code in this page.
+ *  
+ *   Copyright (C) 2014  aldeainvisible.net
+ *
+ *   The JavaScript code in this page is free software: you can
+ *   redistribute it and/or modify it under the terms of the GNU
+ *   Affero General Public License (GNU AGPL) as published by the Free Software
+ *   Foundation, either version 3 of the License, or (at your option)
+ *   any later version.  The code is distributed WITHOUT ANY WARRANTY;
+ *   without even the implied warranty of MERCHANTABILITY or FITNESS
+ *   FOR A PARTICULAR PURPOSE.  See the GNU AGPL for more details.
+ *
+ *   As additional permission under GNU AGPL version 3 section 7, you
+ *   may distribute non-source (e.g., minimized or compacted) forms of
+ *   that code without the copy of the GNU AGPL normally required by
+ *   section 4, provided you include this license notice and a URL
+ *   through which recipients can access the Corresponding Source.
+ *
+ *  @licend  The above is the entire license notice
+ *  for the JavaScript code in this page.
+ * 
+ *  mapas.js v0.8.0
+ * 
+ */
+
 var markers = [];
 var markersQuery = [];
-var markersSelected = [];
-var lat_long;
+var centerLatLong;
 var map;
-var allCategories = ["artesania","naturaleza","oficios","instrumentos","urbano","documental-sonoro","animales"];
+var allCategories = ['artesania', 'naturaleza', 'oficios', 'instrumentos', 'urbano', 'documental-sonoro', 'animales'];
 var allTags = [];
-var archivo;
+var file;
 var param;
-var tagsLI = '';
 var tagsForCloud = [];
-var sideBar;
 var sideBarInicio;
 var sideBarAbout;
 var sideBarParticipa;
-var markerCluster;
-var clusterOps = {gridSize: 30,maxZoom: 13,ignoreHidden: true,averageCenter:true};
-jQuery(document).ready(function($) {
-    // sacamos donde estamos y llenamos varialbes archivo y param
-    archivo = decodeURIComponent( location.pathname.replace(/^.*[\\\/]/, '') );
-    archivo = archivo.replace('.html','');
-    path = decodeURIComponent( decodeURIComponent(location.pathname) );
-    pathArr = path.split('/');
-    pathArr.pop();
-    param = pathArr[pathArr.length -1];
-
-    var element = document.getElementById("mapa");
-    lat_long = new google.maps.LatLng(40.321035,-4.680108);
+var clusterOps = {gridSize: 30, maxZoom: 13, ignoreHidden: true, averageCenter: true};
+jQuery(document).ready(function ($) {
+    // Finding the url we have and initializing param (e.g: tag, category...) and file (e.g: nature, birds...)
+	file = getFile();
+	param = getParam();
+    
+    var element = document.getElementById('mapa');
+    centerLatLong = new google.maps.LatLng(40.321035, -4.680108);
     /*
     Build list of map types.
-    You can also use var mapTypeIds = ["roadmap", "satellite", "hybrid", "terrain", "OSM"]
+    You can also use var mapTypeIds = ['roadmap', 'satellite', 'hybrid', 'terrain', 'OSM']
     but static lists sucks when google updates the default list of map types.
     */
-    var mapTypeIds = ["Komoot","Map1.eu","OSM"];
+    var mapTypeIds = ['Komoot', 'Map1.eu', 'OSM'];
     for(var type in google.maps.MapTypeId) {
         mapTypeIds.push(google.maps.MapTypeId[type]);
     }
 	
     map = new google.maps.Map(element, {
-        center: lat_long,
+        center: centerLatLong,
         zoom: 11,
-        mapTypeId: "Komoot",
+        mapTypeId: 'Komoot',
         mapTypeControlOptions: {
             mapTypeIds: mapTypeIds,
 	        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU
@@ -56,91 +74,97 @@ jQuery(document).ready(function($) {
     // create new info window for marker detail pop-up
     infowindow = new google.maps.InfoWindow();
 
-    map.mapTypes.set("OSM", new google.maps.ImageMapType({
+    map.mapTypes.set('OSM', new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
-            return "http://tile.openstreetmap.org/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
+            return 'http://tile.openstreetmap.org/' + zoom + '/' + coord.x + '/' + coord.y + '.png';
         },
         tileSize: new google.maps.Size(256, 256),
-        name: "OpenStreetMap",
+        name: 'OpenStreetMap',
         maxZoom: 18,
-        alt: "Open Street Map"
+        alt: 'Open Street Map'
     }));
-    map.mapTypes.set("Komoot", new google.maps.ImageMapType({
+    map.mapTypes.set('Komoot', new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
-            return "http://www.komoot.de/tiles/a/" + zoom + "/" + coord.x + "/" + coord.y + ".png";
-            
+            return 'http://www.komoot.de/tiles/a/' + zoom + '/' + coord.x + '/' + coord.y + '.png';
         },
         tileSize: new google.maps.Size(256, 256),
-        name: "Komoot OSM",
+        name: 'Komoot OSM',
         maxZoom: 18,
-        alt: "komoot - Cycling and Hiking Maps"
+        alt: 'komoot - Cycling and Hiking Maps'
     }));
-    map.mapTypes.set("Map1.eu", new google.maps.ImageMapType({
+    map.mapTypes.set('Map1.eu', new google.maps.ImageMapType({
         getTileUrl: function(coord, zoom) {
-            return "http://beta.map1.eu/tiles/" + zoom + "/" + coord.x + "/" + coord.y + ".jpg";
-            
+            return 'http://beta.map1.eu/tiles/' + zoom + '/' + coord.x + '/' + coord.y + '.jpg';
         },
         tileSize: new google.maps.Size(256, 256),
-        name: "Map1.eu",
+        name: 'Map1.eu',
         maxZoom: 15,
-        alt: "Mapa de Europa"
+        alt: 'Mapa de Europa'
     }));    
 
     $(document).keyup(function(e) {
 		if (e.keyCode == 27) { $.jPlayer.pause();infowindow.close();}   // esc
 	});  
-        
+	
+	$('#nav').find('li[data-menu="categorias"]').on('mouseenter', function(){
+		//$('#categorias').addClass('subs');
+		$('#categorias').addClass('subs');
+	});        
 
-    $.getJSON("http://www.freesound.org/apiv2/search/text/?filter=geotag:%22Intersects%28-5.138%2040.125%20-4.223%2040.538%29%22&fields=id,url,created,name,tags,geotag,description,username,pack,download,previews&token=e330f1a7dedaba306af677f43839d216028755bf&format=json&page_size=150",
+    $.getJSON('http://www.freesound.org/apiv2/search/text/?'+
+     'filter=geotag:%22Intersects%28-5.138%2040.125%20-4.223%2040.538%29%22&'+
+     'fields=id,url,created,name,tags,geotag,description,username,pack,download,previews'+
+     '&token=e330f1a7dedaba306af677f43839d216028755bf&'+
+     'format=json&'+
+     'page_size=150',
      function(json1) {
      	$.each(json1.results, function(key,data){
-    		//Do something
-    		geotag = data.geotag;
+    		//process returned data
+    		var geotag = data.geotag;
     		geotag = geotag.split(' ');
+    		var latLng = new google.maps.LatLng(geotag[0],geotag[1]);
     		
-  		  	data.description = data.description.replace(/\r\n/g, "<br />");
+  		  	data.description = data.description.replace(/\r\n/g, '<br />');
   		  	
-  		  	//quitamos tags La-Aldea-Invisible y Spain
-  		  	var quitamos1 = "La-Aldea-Invisible";
-  		  	var quitamos2 = "Spain";
-  		  	
+  		  	// Removing tags La-Aldea-Invisible and Spain	
   		  	data.tags = jQuery.grep(data.tags, function(value) {
-				return value != quitamos1;
+				return value != 'La-Aldea-Invisible';
 			});
   		  	data.tags = jQuery.grep(data.tags, function(value) {
-				return value != quitamos2;
+				return value != 'Spain';
 			});
-  		  	
-    		var latLng = new google.maps.LatLng(geotag[0],geotag[1]); 
-            // Creating a marker and putting it on the map
-
-            var marker = new google.maps.Marker({
-                position: latLng,
-                title: data.name,
-                clickable : true,
-                icon: ponPin('fff000'),
-                optimized: false
-           });
-			
-			marker.soundId = data.id;
-			
-			// make all tags tolowercase
+  		  	// Making all tags tolowercase
 			data.tags = data.tags.map(function (x) {
 				return x.toLowerCase();
 			});
 			
+            // Creating a marker and putting it on the map
+            var marker = new google.maps.Marker({
+				position: latLng,
+				title: data.name,
+				clickable : true,
+				icon: ponPin('fff000'),
+				optimized: false
+			});
 			
-            marker.tags = data.tags;
+			// Adding extra keys to marker in markers array
+			marker.soundId = data.id;		
+			marker.tags = data.tags;
             marker.autor = data.username;
             markers.push(marker);
 
             google.maps.event.addListener(marker, 'click', function() {
-                $('.gm-style-iw').next().click();
+            	//TODO: do we need this?
+           /*     $('.gm-style-iw').next().click();
                 infowindow.setContent('Cargando...');
+			*/
+                // Loading infowindow content for the jplayer
+                	// console.time('loadJP');
 
-                // para el jplayer
-                contenido = cargaJP(data.tags,data.name,data.username,data.created,data.description,data.id,data.previews['preview-hq-mp3'],data.url);
-                infowindow.setContent( contenido );
+                infowindowHTML = loadJP(data.tags,data.name,data.username,data.created,data.description,data.id,data.previews['preview-hq-mp3'],data.url);
+                // console.timeEnd('loadJP');
+
+                infowindow.setContent( infowindowHTML );
                 infowindow.setOptions({maxWidth:280});
                 infowindow.soundId  = data.id;
                 infowindow.open(map, marker);
@@ -148,85 +172,89 @@ jQuery(document).ready(function($) {
             });
                           
             google.maps.event.addListener(infowindow, 'domready', function() {
-                $("#jquery_jplayer_" + data.id).jPlayer({
+                $('#jquery_jplayer_' + data.id).jPlayer({
                     ready: function(event) {
-                        $(this).jPlayer("setMedia", {
+                        $(this).jPlayer('setMedia', {
                             title: data.name,
                             mp3: data.previews['preview-hq-mp3']
-                         //   ,oga: "http://guardarcomofilms.net/mapasonidos/audios/" + data.audiourl + ".ogg"
-                        }).jPlayer("play");
+                         //   ,oga: 'http://guardarcomofilms.net/mapasonidos/audios/' + data.audiourl + '.ogg'
+                        }).jPlayer('play');
                     },
-                    swfPath: "http://www.aldeainvisible.net/js",
-                    supplied: "mp3"
+                    swfPath: 'http://www.aldeainvisible.net/js',
+                    supplied: 'mp3'
                 });
             });
             
-            google.maps.event.addListener(map, "click", function(){
+            google.maps.event.addListener(map, 'click', function(){
 				infowindow.close();
 			});
-            
             marker.setMap(map);
-            // guardamos los tags de cada marker para luego filtrarlos para la nube de tags
+
+            // Collecting all the tags from each marker into allTags[].
             llenaAllTags(data.tags);
         });  // end $.each
-    		
+
      	llenaNubeTags(tagsForCloud);
      	
-     	 // sacamos las categorias para el menu
-        for (i = 0; i < allCategories.length; i++) { 
-      	  $('#categorias').append('<li><a data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
-     	   $('#mcategorias').append('<li><a data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
+     	 // Filling the categories in the menu for desktop and mobile
+        for (var i = 0; i < allCategories.length; i++) { 
+			$('#categorias').append('<li><a data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
+			$('#mcategorias').append('<li><a data-categoria="'+ allCategories[i]  +'" href="http://www.aldeainvisible.net/categoría/'+ allCategories[i] +'.html">' + allCategories[i] + '</a></li>');
         }
+
 		markerCluster = new MarkerClusterer(map, markers,clusterOps);
      	sideBarInicio = $('#dcha_content').html();
      	if (param=='categoría'){
-            if ( allCategories.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
-            $('#categorias li a[data-categoria="'+ archivo +'"]').addClass('sel');
-            $('#mcategorias li a[data-categoria="'+ archivo +'"]').addClass('selected');
-            $('#nav li[data-menu="categorias"]').addClass('selected');
-            $('#mmenu li[data-menu="categorias"] a.hsubs').addClass('selected');
-            muestraCat(archivo);
+            if ( allCategories.indexOf(file) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
+        	// Adding class `selected` the menu (Desktop and mobile) 
+       		$('#categorias a[data-categoria="'+ file +'"],\
+				#mcategorias a[data-categoria="'+ file +'"],\
+				#nav li[data-menu="categorias"],\
+				#mmenu li[data-menu="categorias"] a.hsubs').addClass('selected');
+       		
+           	muestraCat(file);
             $('#dcha_content').show();
         } else 	if (param=='tag'){
-            if ( allTags.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
+            if ( allTags.indexOf(file) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
+            // marking selected on tag cloud
+            //TODO: do we need it?
+            /*
             $('#tagCloud li').each(function(){
-            	if ( $(this).attr('data-tag') == archivo ){
+            	if ( $(this).attr('data-tag') == file ){
             		$(this).addClass('selected');
             		return false;
             	}
             });
-            muestraTag(archivo);
+            */
+            muestraTag(file);
             $('#dcha_content').show();
         } else {
-        	if ( archivo == '' || archivo == 'index' && param == '') { // incio
-	        	$('#nav li[data-menu="inicio"]').addClass('selected');
-	        	$('#mmenu li[data-menu="inicio"] a').addClass('selected');
+        	if ( file == '' || file == 'index' && param == '') { // home
+	        	$('#nav li[data-menu="inicio"], #mmenu li[data-menu="inicio"] a').addClass('selected');
 	        	$('#dcha_content').show();
-			} else if ( archivo == 'acerca_de' ) {
-				$('#nav li[data-menu="acerca_de"]').addClass('selected');
-	        	$('#mmenu li[data-menu="acerca_de"] a').addClass('selected');
+			} else if ( file == 'acerca_de' ) {
+				$('#nav li[data-menu="acerca_de"], #mmenu li[data-menu="acerca_de"] a').addClass('selected');
 	        	if(!sideBarAbout){
-			    	$.get( "sidebar_about.html", function( data ) {
+			    	$.get( 'sidebar_about.html', function( data ) {
 			    		sideBarAbout = data;
-						$( "#dcha_content" ).html( sideBarAbout );
+						$( '#dcha_content' ).html( sideBarAbout );
 						$('#dcha_content').show();
 					});
 				} else {
-					$( "#dcha_content" ).html( sideBarAbout );
+					$( '#dcha_content' ).html( sideBarAbout );
 					$('#dcha_content').show();
 				}
 				document.title = 'La Aldea Invisible - Acerca de';
-			} else if ( archivo == 'participa' ){
-				$('#nav li[data-menu="participa"]').addClass('selected');
-	        	$('#mmenu li[data-menu="participa"] a').addClass('selected');
+			} else if ( file == 'participa' ){
+				$('#nav li[data-menu="participa"], #mmenu li[data-menu="participa"] a').addClass('selected');
 	        	if(!sideBarParticipa){
-			    	$.get( "sidebar_participa.html", function( data ) {
+			    	$.get( 'sidebar_participa.html', function( data ) {
 			    		sideBarParticipa = data;
-						$( "#dcha_content" ).html( sideBarParticipa );
+						$( '#dcha_content' ).html( sideBarParticipa );
 						$('#dcha_content').show();
 					});
 				} else {
-					$( "#dcha_content" ).html( sideBarParticipa );
+					$( '#dcha_content' ).html( sideBarParticipa );
 					$('#dcha_content').show();
 				}
 				document.title = 'La Aldea Invisible - Participa';
@@ -235,14 +263,14 @@ jQuery(document).ready(function($) {
 		
 	
 
-    }); // FIN getJSON
+    }); // END getJSON
     
     //mobime menu
-	$("#mmenu").hide();
-    $(".mtoggle").click(function() {
-        $("#mmenu").fadeToggle(500);
+	$('#mmenu').hide();
+    $('.mtoggle').click(function() {
+        $('#mmenu').fadeToggle(500);
     });
-    //animacion markers
+    // Animating the markers
 	$('#dcha_content').on('mouseenter', 'ul#soundList li', function(){
 		markerId = $(this).attr('data-id');
 		markers[markerId].setAnimation(google.maps.Animation.BOUNCE);
@@ -252,25 +280,17 @@ jQuery(document).ready(function($) {
 		markers[markerId].setAnimation(null);
 	});
 	
-	
+	// Intercepting clicks in links with href=something.html, changing browser url and displaying page as required.
 	$('body').on('click','a[href*=".html"],a[href="/"]',function (e) {
 		e.preventDefault();
 		
-		if ( $('#mmenu').css('display') == 'block' ) $("#mmenu").fadeToggle(500);
+		if ( $('#mmenu').css('display') == 'block' ) $('#mmenu').fadeToggle(500);
 		
 	  // Detect if pushState is available
 		if(history.pushState) {
 			history.pushState(null, null, $(this).attr('href'));
-			archivo = location.pathname.replace(/^.*[\\\/]/, '');
-			archivo = decodeURIComponent(archivo);
-			archivo = archivo.replace('.html','');
-			 
-			path = decodeURIComponent(location.pathname);
-			pathArr = path.split('/');
-			pathArr.pop();
-			param = pathArr[pathArr.length -1];
-			 
-			muestraTagoCat(param,archivo);
+
+			muestraTagoCat();
 		} else {
 	  		window.location.href = $(this).attr('href');
 		}
@@ -287,19 +307,15 @@ jQuery(document).ready(function($) {
 		popped = true; 
 		if (initialPop) return;
 
-		archivo = location.pathname.replace(/^.*[\\\/]/, '');
-		archivo = decodeURIComponent(archivo);
-		archivo = archivo.replace('.html','');
-		 
-		path = decodeURIComponent(location.pathname);
-		pathArr = path.split('/');
-		pathArr.pop();
-		param = pathArr[pathArr.length -1];
-		
-		muestraTagoCat(param,archivo);
+		muestraTagoCat();
 	});
-
-}); // FIN doc ready
+    // Show infowindow from click on sound list li
+    $('#dcha_content').on('click', 'ul#soundList li', function( ){
+		var markerId = $(this).attr('data-id');
+		google.maps.event.trigger(markers[markerId], 'click');
+		
+	});
+}); // END doc ready
 
 function FullScreenControl(controlDiv, map) {
 
@@ -319,19 +335,19 @@ function FullScreenControl(controlDiv, map) {
     controlUI.style.width = '40px';
     controlUI.style.height = '40px';
     controlUI.style.backgroundImage = 'url("http://www.aldeainvisible.net/iconos/fullscreen.png")';
-    controlUI.id = "fullscreen"
+    controlUI.id = 'fullscreen'
     controlDiv.appendChild(controlUI);
 
-    // Setup the click event listeners: simply set the map to Chicago.
+    // Setup the click event listeners: simply set the map to pan to center
     google.maps.event.addDomListener(controlUI, 'click', function() {
-        jQuery("#mapa_container").toggleClass('mapa-fullscreen');
+        jQuery('#mapa_container').toggleClass('mapa-fullscreen');
 	    google.maps.event.trigger(map, 'resize');
-	    map.panTo(lat_long);
+	    map.panTo(centerLatLong);
     });
 }
 
 function ponPin (color){
-    pinImage = new google.maps.MarkerImage("http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|" + color,
+    pinImage = new google.maps.MarkerImage('http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2|' + color,
         new google.maps.Size(21, 34),
         new google.maps.Point(0,0),
         new google.maps.Point(10, 34)
@@ -339,78 +355,76 @@ function ponPin (color){
     return pinImage;
 }
 
-function cargaJP(infoTags,infoTitulo,infoAutor,infoFecha,infoDescripcion,infoId,infoAudiourl,infoUrl){
-    if (infoTags){
-		var tagsHTML = '<li>Tags : ' + listTags(infoTags) + '</li>';
-	} else {
-	    var tagsHTML = '';
-	}
+function loadJP(infoTags,infoTitulo,infoAutor,infoFecha,infoDescripcion,infoId,infoAudiourl,infoUrl){
+	/*
+	 * Prepates content of infowindow
+	 */
+	var tagsHTML = '<li>Tags : ' + listTags(infoTags) + '</li>';
 	var date = new Date(infoFecha);
 	var day = date.getDate();
 	var year = date.getFullYear();
 	var month = date.getMonth()+1;
-	var dateStr = day+"/"+month+"/"+year;
+	var dateStr = day+'/'+month+'/'+year;
 
 	$('#fecha').val(dateStr)
 
-    var infoHTML = '<div class="infowindow"> \
-<div class="marker type-marker">\
-    <div class="post-title"><h3>' + infoTitulo +'</h3></div> \
-    <div class="post-content"> \
-        <hr /> \
-        <p>Autor: ' + infoAutor + '<br /> \
-          Fecha: ' +  dateStr + ' \
-        </p> \
-        <p>' + infoDescripcion + ' </p> \
-        <hr /> \
-        <div id="jquery_jplayer_' + infoId + '" class="jp-jplayer"></div> \
-        <div id="jp_container_1" class="jp-audio"> \
-            <div class="jp-type-single"> \
-                <div class="jp-gui jp-interface"> \
-                    <ul class="jp-controls"> \
-                        <li><a href="javascript:\;" class="jp-play" tabindex="1">play</a></li> \
-                        <li><a href="javascript:\;" class="jp-pause" tabindex="1">pause</a></li> \
-                        <li><a href="javascript:\;" class="jp-stop" tabindex="1">stop</a></li> \
-                        <li><a href="javascript:\;" class="jp-mute" tabindex="1" title="mute">mute</a></li> \
-                        <li><a href="javascript:\;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li> \
-                        <li><a href="javascript:\;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li> \
-                    </ul> \
-                    <div class="jp-progress"> \
-                        <div class="jp-seek-bar"> \
-                            <div class="jp-play-bar"></div> \
-                        </div> \
-                    </div> \
-                    <div class="jp-volume-bar"> \
-                        <div class="jp-volume-bar-value"></div> \
-                    </div> \
-                    <div class="jp-current-time"></div> \
-                    <div class="jp-duration"></div> \
-                </div> \
-                <div class="jp-no-solution"> \
-                    <span>Update Required</span> \
-                    To play the media you will need to either update your browser to a recent version or update your <a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>. \
-                </div> \
-            </div> \
-        </div> \
-        <hr class="clear" /> \
-        <div class="marker-info"> \
-            <div id="etiquetas-marker"> \
-                <ul> ' + tagsHTML + '  </ul> \
-            </div> \
-            <span class="download-link"><a onclick="pauseJPlayer()" tabindex="1" href="' + infoUrl + '" target="_blank">Descargar en freesound.org</a></span> \
-        </div> \
-    </div> \
-</div> \
-</div>'
+    var infoWindowHTML = '<div class="infowindow">'  +
+		'<div class="marker type-marker">' +
+		'<div class="post-title"><h3>' + infoTitulo +'</h3></div>'  +
+    	'<div class="post-content"><hr />'  +
+        '<p>Autor: ' + infoAutor + '<br />Fecha: ' +  dateStr + '</p>'  +
+        '<p>' + infoDescripcion + ' </p><hr />'  +
+        '<div id="jquery_jplayer_' + infoId + '" class="jp-jplayer"></div>'  +
+        '<div id="jp_container_1" class="jp-audio">'  +
+        '<div class="jp-type-single">'  +
+        '<div class="jp-gui jp-interface">'  +
+        '<ul class="jp-controls">'  +
+        '<li><a href="javascript:\;" class="jp-play" tabindex="1">play</a></li>'  +
+        '<li><a href="javascript:\;" class="jp-pause" tabindex="1">pause</a></li>'  +
+        '<li><a href="javascript:\;" class="jp-stop" tabindex="1">stop</a></li>'  +
+        '<li><a href="javascript:\;" class="jp-mute" tabindex="1" title="mute">mute</a></li>'  +
+        '<li><a href="javascript:\;" class="jp-unmute" tabindex="1" title="unmute">unmute</a></li>'  +
+        '<li><a href="javascript:\;" class="jp-volume-max" tabindex="1" title="max volume">max volume</a></li>'  +
+        '</ul>'  +
+        '<div class="jp-progress">'  +
+        '<div class="jp-seek-bar">'  +
+        '<div class="jp-play-bar"></div>'  +
+        '</div>'  +
+        '</div>'  +
+        '<div class="jp-volume-bar">'  +
+        '<div class="jp-volume-bar-value"></div>'  +
+        '</div>'  +
+        '<div class="jp-current-time"></div>'  +
+        '<div class="jp-duration"></div>'  +
+        '</div>'  +
+        '<div class="jp-no-solution">'  +
+        '<span>Update Required</span>'  +
+        'To play the media you will need to either update your browser' +
+        'to a recent version or update your' + 
+        '<a href="http://get.adobe.com/flashplayer/" target="_blank">Flash plugin</a>.'  +
+        '</div></div></div>'  +
+        '<hr class="clear" />'  +
+        '<div class="marker-info">'  +
+        '<div id="etiquetas-marker">'  +
+        '<ul> ' + tagsHTML + '  </ul>'  +
+        '</div>'  +
+        '<span class="download-link">' +
+        '<a onclick="pauseJPlayer()" tabindex="1" href="' + infoUrl + '" target="_blank">' + 
+        'Descargar en freesound.org</a></span>'  +
+        '</div>'  +
+        '</div>'  +
+        '</div>'  +
+        '</div>';
 
-return infoHTML;
+	return infoWindowHTML;
 }
 
 function llenaAllTags(tagsArr){
- //   tagsArr = infoTags.split(',');
-    for (i = 0; i < tagsArr.length; i++) {
-        // quitamos espacios en blanco
-        tagsArr[i] = tagsArr[i].trim();
+	/*
+	 * Populate tagsForCloud array with unique array values
+	 */
+	var len = tagsArr.length;
+    for (var i = 0; i < len; i++) {
         //miramos que no este ya en el array
         if (allTags.indexOf( tagsArr[i] ) < 0){
             allTags.push(tagsArr[i])
@@ -419,23 +433,28 @@ function llenaAllTags(tagsArr){
     }
 }
 function listTags(tagsArr){
+	/*
+	 * Populates the tags in the infowindow
+	 */
     var tags = '';
-    for (i = 0; i < tagsArr.length; i++) {
-        // quitamos espacios en blanco
-        tagsArr[i] = tagsArr[i].trim();
-        tags += '<a href="http://www.aldeainvisible.net/tag/'+ tagsArr[i] +'.html" title="Ver solo tag ' + tagsArr[i] + '" >' + tagsArr[i] + '</a> ';
+    var len = tagsArr.length;
+    for (var i = 0; i < len; i++) {
+       tags += '<a href="http://www.aldeainvisible.net/tag/'+ tagsArr[i] +'.html">' + tagsArr[i] + '</a> ';
     }
     return tags;
 }
 function pauseJPlayer(){ $.jPlayer.pause();}
-function stopJPlayer(){ $('.jp-jplayer').jPlayer('stop');}
 function llenaNubeTags(arr) {
+	/*
+	 * Populates the tag cloud
+	 */
     var  tags = [], frecuencia = [],prev;
     // sort case insensitive
 	arr.sort(function (a, b) {
     	return a.toLowerCase().localeCompare(b.toLowerCase());
 	});
-    for ( var i = 0; i < arr.length; i++ ) {
+	var len = arr.length;
+    for ( var i = 0; i < len; i++ ) {
         if ( arr[i] !== prev ) {
             tags.push(arr[i]);
             frecuencia.push(1);
@@ -444,119 +463,127 @@ function llenaNubeTags(arr) {
         }
         prev = arr[i];
     }
-    for ( var i = 0; i < tags.length; i++ ) {
-		tagsLI += '<li class="freq_'+frecuencia[i]+'" data-tag="'+tags[i]+'"><a href="http://www.aldeainvisible.net/tag/'+tags[i]+'.html">'+tags[i]+' <span>(' +frecuencia[i] + ')</span></a></li> ';
+    console.time('llenaTags');
+  
+	var arrList = [];
+	var tagsLen = tags.length;
+	for(var i = 0; i < tagsLen; i++){
+		if (frecuencia[i] > 1){
+    		arrList[i] = '<li class="freq_'+frecuencia[i]+'" data-tag="'+tags[i]+'">'+
+    		  '<a href="http://www.aldeainvisible.net/tag/'+tags[i]+'.html">'+tags[i]+
+    		  ' <span>(' +frecuencia[i] + ')</span></a></li> ';
+		}
 	}
-   $('#tagCloud').append(tagsLI);
+	$('#tagCloud').html(arrList.join(''));
+  
+   console.timeEnd('llenaTags');
 }
 
-// segun la url mostramos categoria seleccionada o tag seleccionado
-function muestraTagoCat(param,archivo){
+function muestraTagoCat(){
+	/*
+	 * Show tag, category (param) or file depending on url 
+	 */
+	
+	// Getting param and file from url
+	param = getParam();
+	file = getFile();
 	// reload all markers to markerCluster if needed
 	if( markers.length != markerCluster.getTotalMarkers() ){
 		markerCluster.clearMarkers();
 		markerCluster.addMarkers(markers);
 	}
-	//empty search box
-	$('input#query').val('');
+	// Clear search box
+	$('#query').val('');
 	
-	//cerramos globos si los hay
-		infowindow.close();
+	// Close infowindow TODO: if any
+	infowindow.close();
+	
+	// Clear class selected in the menu
+	$('#mmenu .selected, #nav .selected').removeClass('selected');
+
     if (param=='categoría'){
-        if ( allCategories.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
-        $('li[data-menu], li[data-menu] a').removeClass('selected');
-        $('#categorias li a[data-categoria]').removeClass('sel');
-        $('#categorias li a[data-categoria="'+ archivo +'"]').addClass('sel');
-        $('#mcategorias li a[data-categoria="'+ archivo +'"]').addClass('selected');
-        $('#nav li[data-menu="categorias"]').addClass('selected');
-        $('#mmenu li[data-menu="categorias"] a.hsubs').addClass('selected');
-		
-		//TODO: el desplegable no se rocoje al seleccionau una categoria (ver en chrome)
-		$('#categorias').css({
-			'transform': 'scaleY(0)',
-			'left': '-9999px',
-			'top': '-9999px'
-			
-		});
+        if ( allCategories.indexOf(file) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';} // if category does not existe back to home
+
+		// Marking the menu
+		$('#categorias a[data-categoria="'+ file +'"],\
+			#mcategorias a[data-categoria="'+ file +'"],\
+			#nav li[data-menu="categorias"],\
+			#mmenu li[data-menu="categorias"] a.hsubs').addClass('selected');
+
+  		/*
+  		 *  Patch for Chrome (the ul#categorias stays after selection of category)
+  		 *  Removings class 'subs' we also remove it's hover effect
+  		 *  We add it again with mouseenter on li[data-menu="categorias"] 
+  		 */
+  		$('#categorias').removeClass('subs');
+        /* end patch */
        
-       
-         setTimeout(function(){
-         	$('#categorias').removeAttr('style');
-         	
-         	}, 1000);
-			
-        
-     //   $('#mmenu li[data-menu="inicio"]').addClass('selected');
-        muestraCat(archivo);
+        muestraCat(file);
         
     } else if (param=='tag'){
-        if ( allTags.indexOf(archivo) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
-        $('li[data-menu], li[data-menu] a').removeClass('selected');
-        $('#categorias li a[data-categoria]').removeClass('sel');
+        if ( allTags.indexOf(file) == -1 ) {window.location.href = 'http://www.aldeainvisible.net/';}
         $('#tagCloud li').each(function(){
-        	if ( $(this).attr('data-tag') == archivo ){
+        	if ( $(this).attr('data-tag') == file ){
         		$(this).addClass('selected');
         		return false;
         	}
         });
-    //    $('#tagActivo').append('Mostrando tag: <span>'+ archivo +'</span>');
-        muestraTag(archivo);
+        muestraTag(file);
     } else if (param == ''){  
-    	$('li[data-menu], li[data-menu] a').removeClass('selected');
-    	$('#categorias li a[data-categoria]').removeClass('sel');
-    	if(archivo == 'index' || archivo == ''){ // index
-	    	$('#nav li[data-menu="inicio"]').addClass('selected');
-	    	$('#mmenu li[data-menu="inicio"] a').addClass('selected');
+     	if(file == 'index' || file == ''){ // home
+	    	$('#nav li[data-menu="inicio"],#mmenu li[data-menu="inicio"] a').addClass('selected');
 	    	mapaAInicio();
 	    	$('#dcha_content').html(sideBarInicio);
 	    	document.title = 'La Aldea Invisible';	   
-    	} else if(archivo=='acerca_de'){
-    		$('#nav li[data-menu="acerca_de"]').addClass('selected');
-	    	$('#mmenu li[data-menu="acerca_de"] a').addClass('selected');
+    	} else if(file=='acerca_de'){
+    		$('#nav li[data-menu="acerca_de"],#mmenu li[data-menu="acerca_de"] a').addClass('selected');
 	    	if(!sideBarAbout){
-		    	$.get( "sidebar_about.html", function( data ) {
+		    	$.get( 'sidebar_about.html', function( data ) {
 		    		sideBarAbout = data;
-		    		$( "#dcha_content" ).html( sideBarAbout );			
+		    		$( '#dcha_content' ).html( sideBarAbout );			
 				});
 			} else {
-				$( "#dcha_content" ).html( sideBarAbout );
+				$( '#dcha_content' ).html( sideBarAbout );
 			}
 			document.title = 'La Aldea Invisible - Acerca de';
 			mapaAInicio();
-    	} else if(archivo=='participa'){
-    		$('#nav li[data-menu="participa"]').addClass('selected');
-	    	$('#mmenu li[data-menu="participa"] a').addClass('selected');
+    	} else if(file=='participa'){
+    		$('#nav li[data-menu="participa"],#mmenu li[data-menu="participa"] a').addClass('selected');
 	    	if(!sideBarParticipa){
-		    	$.get( "sidebar_participa.html", function( data ) {
+		    	$.get( 'sidebar_participa.html', function( data ) {
 		    		sideBarParticipa = data;
-		    		$( "#dcha_content" ).html( sideBarParticipa );			
+		    		$( '#dcha_content' ).html( sideBarParticipa );			
 				});
 			} else {
-				$( "#dcha_content" ).html( sideBarParticipa );
+				$( '#dcha_content' ).html( sideBarParticipa );
 			}
 			document.title = 'La Aldea Invisible - Participa';
 			mapaAInicio();
 			
 		}
     }
-    $( "#dcha_content" ).show();
+    $( '#dcha_content' ).show();
+
 }
 
 function muestraTag(tag) {
-    var i;
+	/*
+	 * Shows selected tag
+	 */
     var count = 0;
-    sideBar = "<h3>Tag " + tag +" <span>(__COUNT__)</span><\/h3>";
-    sideBar += "<ul id='soundList'>";
-    for (i = 0; i < markers.length; i++) {
+    var sideBar = '<h3>Tag ' + tag +' <span>(__COUNT__)</span><\/h3>' +
+                  '<ul id="soundList">';
+    var len = markers.length;
+    for (var i = 0; i < len; i++) {
         if ( markers[i].tags.indexOf(tag) > -1 ) {
             markers[i].setVisible(true);
-            count = count + 1;
-        	sideBar += '<li data-id="'+ i +'" onclick="return myclick(' + i + ')"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';
+            count++;
+        	sideBar += '<li data-id="'+ i +'"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';
         } else {
             markers[i].setVisible(false);
         }
     }
-    sideBar += "</ul>";
+    sideBar += '</ul>';
     $('#dcha_content').html(sideBar.replace('__COUNT__',count));
     if (markerCluster) {
     	markerCluster.repaint();
@@ -564,26 +591,25 @@ function muestraTag(tag) {
 	document.title = 'La Aldea Invisible - Tag '+ tag;
 }
 
-function myclick(i) {
-	google.maps.event.trigger(markers[i], "click");
-}
-
 function muestraCat(category) {
-    var i;
+	/*
+	 * Shows selected categoty
+	 */
     var count = 0;
-    sideBar = "<h3>Categorí­a " + category +" <span>(__COUNT__)</span><\/h3>";
-    sideBar += "<ul id='soundList'>";
-    for (i = 0; i < markers.length; i++) {
+    var sideBar = '<h3>Categorí­a ' + category +' <span>(__COUNT__)</span><\/h3>' +
+    		  '<ul id="soundList">';
+    var len = markers.length;
+    for (var i = 0; i < len; i++) {
         if ( markers[i].tags.indexOf(category) > -1 ) {
             markers[i].setVisible(true);
-            count = count + 1;
-            sideBar += '<li data-id="'+ i +'" onclick="myclick(' + i + ')"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';
+            count++;
+            sideBar += '<li data-id="'+ i +'"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';
         }
         else {
             markers[i].setVisible(false);
         }
     }
-    sideBar += "</ul>";
+    sideBar += '</ul>';
     $('#dcha_content').html(sideBar.replace('__COUNT__', count));
 	if (markerCluster) {
     	markerCluster.repaint();
@@ -591,76 +617,90 @@ function muestraCat(category) {
 	document.title = 'La Aldea Invisible - Categoría '+ category;
 } 
 
+
 function mapaAInicio(){
-	//Hacemos todos los markets visibles
-	for (i = 0; i < markers.length; i++) {
+	/*
+	 * Resets map
+	 */
+	
+	// Making all markers visible
+	var len = markers.length;
+	for (i = 0; i < len; i++) {
 		markers[i].setVisible(true);
 	}
-	
-	//	Reiniciamos mapa
-	map.panTo(lat_long);
+	//	Setting initial center and zoom
+	map.panTo(centerLatLong);
 	map.setZoom(11);
+	// Refreshing markercluster
 	if (markerCluster) {
 		markerCluster.repaint();
 	}
-	//vaciamos el buscador
-	$('input#query').val('');
+	// Clearing the search box
+	$('#query').val('');
 }
 
 /*
- * Buscador
+ * Search
  */
 function doQuery(){
+	/*
+	 * Does the query and shows resuts
+	 */
 	var busqueda = $('#query').val();
 	busqueda = busqueda.trim();
-	if (busqueda=='') return;
-	$.getJSON('http://www.freesound.org/apiv2/search/text/?filter=geotag:%22Intersects%28-5.138%2040.125%20-4.223%2040.538%29%22&fields=id&token=e330f1a7dedaba306af677f43839d216028755bf&format=json&page_size=150&query='+busqueda, function (json1) {
-
-		//TODO: comprobar que hay al menos 1 resultado
+	if (busqueda=='') return false;
+	infowindow.close();
+	// Clear class selected in the menu
+	$('#mmenu .selected, #nav .selected').removeClass('selected');
+	$.getJSON('http://www.freesound.org/apiv2/search/text/?'+
+	  'filter=geotag:%22Intersects%28-5.138%2040.125%20-4.223%2040.538%29%22&'+
+	  'fields=id&'+
+	  'token=e330f1a7dedaba306af677f43839d216028755bf&'+
+	  'format=json&'+
+	  'page_size=150&'+
+	  'query='+busqueda, 
+	  function (json1) {
+		//	Resetting map
 		markerCluster.clearMarkers();
-		//	Reiniciamos mapa
-
- 		map.panTo(lat_long);
+ 		map.panTo(centerLatLong);
 		map.setZoom(11);
-		sideBar = '<h3>Resultados búsqueda ' + busqueda + ' <span> ('+json1.results.length+')</span><\/h3>';
-		sideBar += '<ul id="soundList">';
+
+		var sideBar = '<h3>Resultados búsqueda ' + busqueda + 
+		          ' <span> ('+json1.results.length+')</span><\/h3>' +
+				  '<ul id="soundList">';
+		var len = markers.length;		  
 		$.each(json1.results, function (key, data) {
-		/*
-		    for (var i = 0; i < markers.length; i++) {
-		        if (data.id == markers[i].soundId) {
-		        	markers[i].setVisible(true);
-		          	sideBar += '<li data-id="'+ i +'" onclick="myclick(' + i + ')"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';	          
-		        } else {
-		        	 markers[i].setVisible(false);
-		        }
-		    }
-		 */ 
-		
-		for (var i = 0; i < markers.length; i++) {
-			if (data.id == markers[i].soundId) {
-				markers[i].setVisible(true);
-		    	markerCluster.addMarker(markers[i]);
-		        sideBar += '<li data-id="'+ i +'" onclick="myclick(' + i + ')"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';	          
-		    }
-		}
-		 
-		 
-		  	
-	   		
+			for (var i = 0; i < len; i++) {
+				if (data.id == markers[i].soundId) {
+					markers[i].setVisible(true);
+			    	markerCluster.addMarker(markers[i]);
+			        sideBar += '<li data-id="'+ i +'"><a href="javascript:void(0)">' + markers[i].title + '</a><\/li>';
+			        break;          
+			    }
+			}
 		}); // end $.each
-		sideBar += "</ul>";
+		sideBar += '</ul>';
 		$('#dcha_content').html(sideBar);
 		
-		//	Reiniciamos mapa
-/*
- 		map.panTo(lat_long);
-		map.setZoom(11);
-*/
-		if (markerCluster) {
-		//	markerCluster.repaint();
-		}
-
-	}); // FIN getJSON
+	}); // END getJSON
 	return false;
 }
 
+function getParam(){
+	/*
+	 * Gets the param (tag or category or "") from url
+	 */
+	path = decodeURIComponent( decodeURIComponent(location.pathname) );
+	pathArr = path.split('/');
+    pathArr.pop();
+    param = pathArr[pathArr.length -1];
+    return param;
+}
+function getFile(){
+	/*
+	 * Gets the file (nature or birds or whatever...) from url
+	 */
+    file = decodeURIComponent( location.pathname.replace(/^.*[\\\/]/, '') );
+    file = file.replace('.html','');
+    return file;
+}

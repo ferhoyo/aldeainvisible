@@ -75,11 +75,10 @@
     outline: 0 none;
 }
 #nav li.selected {background-color:#8FBC8F;}
-#nav li:hover ul.subs {
+#nav li:hover ul.subs, #nav li a:focus + ul.subs, #nav li a:active + ul.subs {
     left: 0;
     top: 35px;
     width: 88px;
-
     -moz-transform: scaleY(1);
     -ms-transform: scaleY(1);
     -o-transform: scaleY(1);

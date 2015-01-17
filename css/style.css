@@ -133,7 +133,7 @@ input#query{
 
 }
 
-#categorias li a.sel {background-color:#8FBC8F;color:#fff}
+#categorias li a.selected {background-color:#8FBC8F;color:#fff}
 #tagActivo span {font-weight:400;text-transform:capitalize;}
 
 #tagCloud {
@@ -208,9 +208,13 @@ li.freq_9{
 }
 
 #footer a {
-    margin-right: 15px;
+    margin-right: 10px;
+    text-decoration: none;
 }
-#footer img {max-width:90%}
+#footer img {
+	max-width:90%;
+	vertical-align: middle;
+}
 
 /*
  * About us
